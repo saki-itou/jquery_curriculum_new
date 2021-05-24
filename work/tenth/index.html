@@ -88,7 +88,7 @@
       //   </div>
       // </div>
       $(function() {
-        $('search__btn').on('click', function () {
+        $('.search__btn').on('click', function () {
           var keyword = $('search__text__input').val();
         //})
           $.ajax({
@@ -106,14 +106,14 @@
           if (data.hits === 0) {
               $('.message').prepend('<p>検索結果が見つかりませんでした。<br>別のキーワードで検索してください。</p>');
             } else if (data.hits > 0) {
-              $.each(data.Items, function(index, item) {
+              $.each(data.Item, function(index, item) {
                 console.log(item);
-                var itemList = $('<li class="lists__item">' + '<div class="lists__item__inner">' + '<a href="'+ item.Items.itemUrl +'"lists__item__link" target="_blank">' + '<img src="' + item.Items.largeImageUrl + '" class="lists__item__img" alt="' + item.Items.title + '">'
-                + '<p class="lists__item__detail">作品名：'+ item.Items.title +'</p>'
-                + '<p class="lists__item__detail">作者　：' + item.Items.author +'</p>'
-                + '<p class="lists__item__detail">出版社：' + item.Items.publisherName +'</p>'
+                var itemList = $('<li class="lists__item">' + '<div class="lists__item__inner">' + '<a href="'+ item.Item.itemUrl +'"lists__item__link" target="_blank">' + '<img src="' + item.Item.largeImageUrl + '" class="lists__item__img" alt="' + item.Item.title + '">'
+                + '<p class="lists__item__detail">作品名：'+ item.Item.title +'</p>'
+                + '<p class="lists__item__detail">作者　：' + item.Item.author +'</p>'
+                + '<p class="lists__item__detail">出版社：' + item.Item.publisherName +'</p>'
                 + '</a>' + '</div>' + '</li>');
-                $('.ul').prepend(itemList);
+                $('.lists').prepend(itemList);
               })
             }
           console.log(data);
