@@ -106,15 +106,23 @@
           if (data.hits === 0) {
               $('.message').prepend('<p>検索結果が見つかりませんでした。<br>別のキーワードで検索してください。</p>');
             } else if (data.hits > 0) {
-              $.each(data.Item, function(index, item) {
+              $.each(data.Items, function(index, item) {
                 console.log(item);
-                var itemList = $('<li class="lists__item">' + '<div class="lists__item__inner">' + '<a href="'+ item.Item.itemUrl +'"lists__item__link" target="_blank">' + '<img src="' + item.Item.largeImageUrl + '" class="lists__item__img" alt="' + item.Item.title + '">'
+                var itemList = $('<li class="lists__item">' + '<div class="lists__item__inner">' + '<a href="'+ item.Item.itemUrl +'" class="lists__item__link" target="_blank">' + '<img src="' + item.Item.largeImageUrl + '" class="lists__item__img" alt="' + item.Item.title + '">'
                 + '<p class="lists__item__detail">作品名：'+ item.Item.title +'</p>'
                 + '<p class="lists__item__detail">作者　：' + item.Item.author +'</p>'
                 + '<p class="lists__item__detail">出版社：' + item.Item.publisherName +'</p>'
                 + '</a>' + '</div>' + '</li>');
                 $('.lists').prepend(itemList);
-              })
+              });
+                var pageList = $('<div class="pager" data-js="pager">' + '<div class="counter">' + '<span class="counter-current"></span>/<span class="counter-all"></span>' + '</div>'
+                + '<div class="btn-wrapper">' + '<a class="btn-item" data-js="page-prev" href="">前へ</a>'
+                + '<a class="btn-item" data-js="page-next" href="">次へ</a>'
+                + '</div>' + '</div>');
+                $('.lists').after(pageList);
+                $('').on('click', function() {
+                  
+                });
             }
           console.log(data);
           })
