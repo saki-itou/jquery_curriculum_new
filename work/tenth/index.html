@@ -87,10 +87,81 @@
       //     <a class="btn-item" data-js="page-next" href="">次へ</a>
       //   </div>
       // </div>
-      $(function() {
+
+//検索ボタンを押したら
+  //検索ワードの取得
+  //ajax通信の開始
+  //.listsの取得
+
+
+//次へボタンを押したら
+  //ajax通信の開始
+  //listsの取得
+  //ページナンバー＋1
+
+
+//前へボタンを押したら
+  //ajax通信の開始
+  //.listsの取得
+  //ページナンバー－1
+
+        $(function() {
+          $('.search__btn').on('click', function () {
+            products();
+          });
+
+          $(document).on('click', '.btn-item', function() {  //前へ
+            products();
+            return false;
+          });
+
+          $(document).on('click', '.btn-item', function() {  //次へ
+            products();
+            return false;
+          });
+
+          function products() {
+            var keyword = $('.search__text__input').val();
+            $.ajax({
+            url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
+            type: 'GET',
+            datatype: 'json',
+            data: {
+            keyword: keyword,
+            hits: '20',
+            applicationId: appId,
+            booksGenreId: '001'
+          }
+        }).done(function(data) {
+          if (data.hits === 0) {
+            $('.message').prepend('<p>検索結果が見つかりませんでした。<br>別のキーワードで検索してください。</p>');
+          } else if  (data.hits > 0) {
+            $('ul').empty();
+            $.each(data.Items, function(index, item) {
+              console.log(item);
+              var itemList = $('<li class="lists__item">' + '<div class="lists__item__inner">' + '<a href="'+ item.Item.itemUrl +'" class="lists__item__link" target="_blank">' + '<img src="' + item.Item.largeImageUrl + '" class="lists__item__img" alt="' + item.Item.title + '">'
+                + '<p class="lists__item__detail">作品名：'+ item.Item.title +'</p>'
+              + '<p class="lists__item__detail">作者　：' + item.Item.author +'</p>'
+              + '<p class="lists__item__detail">出版社：' + item.Item.publisherName +'</p>'
+              + '</a>' + '</div>' + '</li>');
+              $('.lists').prepend(itemList);
+            });
+              var pageList = $('<div class="pager" data-js="pager">' + '<div class="counter">' + '<span class="counter-current"></span>/<span class="counter-all"></span>' + '</div>'
+              + '<div class="btn-wrapper">' + '<a class="btn-item" data-js="page-prev" href="">前へ</a>'
+              + '<a class="btn-item" data-js="page-next" href="">次へ</a>'
+              + '</div>' + '</div>');
+              $('.lists').after(pageList);
+          }
+        })
+          }
+        });
+
+
+      /*$(function() {
         $('.search__btn').on('click', function () {
-          var keyword = $('search__text__input').val();
-        //})
+          var keyword = $('.search__text__input').val();
+          console.log(keyword);
+
           $.ajax({
             url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
             type: 'GET',
@@ -103,31 +174,39 @@
           },
         }).done(function(data) {
           // この中にデータ取得後の動きを記述していきます。
-          if (data.hits === 0) {
+            products();
+                
+          $(document).on('click','.btn-item', function() {
+            return false;
+            console.log(keyword);
+            products();
+          });
+
+          function products() {
+            
+            if (data.hits === 0) {
               $('.message').prepend('<p>検索結果が見つかりませんでした。<br>別のキーワードで検索してください。</p>');
             } else if (data.hits > 0) {
               $.each(data.Items, function(index, item) {
-                console.log(item);
-                var itemList = $('<li class="lists__item">' + '<div class="lists__item__inner">' + '<a href="'+ item.Item.itemUrl +'" class="lists__item__link" target="_blank">' + '<img src="' + item.Item.largeImageUrl + '" class="lists__item__img" alt="' + item.Item.title + '">'
-                + '<p class="lists__item__detail">作品名：'+ item.Item.title +'</p>'
-                + '<p class="lists__item__detail">作者　：' + item.Item.author +'</p>'
-                + '<p class="lists__item__detail">出版社：' + item.Item.publisherName +'</p>'
-                + '</a>' + '</div>' + '</li>');
-                $('.lists').prepend(itemList);
-              });
-                var pageList = $('<div class="pager" data-js="pager">' + '<div class="counter">' + '<span class="counter-current"></span>/<span class="counter-all"></span>' + '</div>'
-                + '<div class="btn-wrapper">' + '<a class="btn-item" data-js="page-prev" href="">前へ</a>'
-                + '<a class="btn-item" data-js="page-next" href="">次へ</a>'
-                + '</div>' + '</div>');
-                $('.lists').after(pageList);
-                $('').on('click', function() {
-                  
-                });
+              console.log(item);
+              var itemList = $('<li class="lists__item">' + '<div class="lists__item__inner">' + '<a href="'+ item.Item.itemUrl +'" class="lists__item__link" target="_blank">' + '<img src="' + item.Item.largeImageUrl + '" class="lists__item__img" alt="' + item.Item.title + '">'
+              + '<p class="lists__item__detail">作品名：'+ item.Item.title +'</p>'
+              + '<p class="lists__item__detail">作者　：' + item.Item.author +'</p>'
+              + '<p class="lists__item__detail">出版社：' + item.Item.publisherName +'</p>'
+              + '</a>' + '</div>' + '</li>');
+              $('.lists').prepend(itemList);
+            });
+              var pageList = $('<div class="pager" data-js="pager">' + '<div class="counter">' + '<span class="counter-current"></span>/<span class="counter-all"></span>' + '</div>'
+              + '<div class="btn-wrapper">' + '<a class="btn-item" data-js="page-prev" href="">前へ</a>'
+              + '<a class="btn-item" data-js="page-next" href="">次へ</a>'
+              + '</div>' + '</div>');
+              $('.lists').after(pageList);
+            }
             }
           console.log(data);
           })
         });
-      });
+      });*/
     </script>
   </body>
 </html>
