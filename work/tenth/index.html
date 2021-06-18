@@ -72,8 +72,8 @@
       //
       // 取得できた書籍の件数をもとに、ページャを作成しましょう
       // ページャの条件
-      // ├ 「現在のページ数」と「全てのページ数」が表示されている
-      // ├ 「前へ」と「次へ」のボタンがある
+      // ├ 〇「現在のページ数」と「全てのページ数」が表示されている
+      // ├ 〇「前へ」と「次へ」のボタンがある
       // ├ 1ページ目では「前へ」に、最後のページでは「次へ」にdisabledクラスをつけて非活性（使用不能）にする
       // └ 1ページしかない場合はどちらもdisabledクラスをつけて非活性にする
       //
@@ -106,18 +106,21 @@
   //ページナンバー－1
 
         $(function() {
+
+          var pageNum = 0;
+
           $('.search__btn').on('click', function () {
             products();
           });
 
-          $(document).on('click', '.btn-item', function() {  //前へ
+          $(document).on('click', '.btn-item', function(event) {  //前へ
             products();
-            return false;
+            event.preventDefault();
           });
 
-          $(document).on('click', '.btn-item', function() {  //次へ
+          $(document).on('click', '.btn-item', function(event) {  //次へ
             products();
-            return false;
+            event.preventDefault();
           });
 
           function products() {
@@ -127,32 +130,35 @@
             type: 'GET',
             datatype: 'json',
             data: {
-            keyword: keyword,
-            hits: '20',
-            applicationId: appId,
-            booksGenreId: '001'
+              applicationId: appId,
+              booksGenreId: '001',
+              keyword: keyword,
+              hits: 20
           }
         }).done(function(data) {
-          if (data.hits === 0) {
+          if (data.count === 0) {
             $('.message').prepend('<p>検索結果が見つかりませんでした。<br>別のキーワードで検索してください。</p>');
-          } else if  (data.hits > 0) {
-            $('ul').empty();
+          } else if  (data.count > 0) {
+            $('.lists').empty();
             $.each(data.Items, function(index, item) {
               console.log(item);
-              var itemList = $('<li class="lists__item">' + '<div class="lists__item__inner">' + '<a href="'+ item.Item.itemUrl +'" class="lists__item__link" target="_blank">' + '<img src="' + item.Item.largeImageUrl + '" class="lists__item__img" alt="' + item.Item.title + '">'
+              var itemList = ''
+              itemList += '<li class="lists__item">' + '<div class="lists__item__inner">' + '<a href="'+ item.Item.itemUrl +'" class="lists__item__link" target="_blank">' + '<img src="' + item.Item.largeImageUrl + '" class="lists__item__img" alt="' + item.Item.title + '">'
                 + '<p class="lists__item__detail">作品名：'+ item.Item.title +'</p>'
               + '<p class="lists__item__detail">作者　：' + item.Item.author +'</p>'
               + '<p class="lists__item__detail">出版社：' + item.Item.publisherName +'</p>'
-              + '</a>' + '</div>' + '</li>');
+              + '</a>' + '</div>' + '</li>'
               $('.lists').prepend(itemList);
             });
-              var pageList = $('<div class="pager" data-js="pager">' + '<div class="counter">' + '<span class="counter-current"></span>/<span class="counter-all"></span>' + '</div>'
+              $('.pager').remove();
+              var pageList = $('<div class="pager" data-js="pager">' + '<div class="counter">' + '<span class="counter-current">'+data.page+'</span>/<span class="counter-all">'+ data.pageCount +'</span>' + '</div>'
               + '<div class="btn-wrapper">' + '<a class="btn-item" data-js="page-prev" href="">前へ</a>'
               + '<a class="btn-item" data-js="page-next" href="">次へ</a>'
               + '</div>' + '</div>');
               $('.lists').after(pageList);
-          }
-        })
+            }
+          console.log(data);
+            })
           }
         });
 
