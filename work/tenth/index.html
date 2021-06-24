@@ -110,21 +110,40 @@
           var pageNum = 0;
 
           $('.search__btn').on('click', function () {
+            keyword = keywordButton();
+            pageNum = countUp();
             products();
           });
 
-          $(document).on('click', '.btn-item', function(event) {  //前へ
+          $(document).on('click', '[data-js="page-prev"]', function(event) {  //前へ
             products();
+            pageNum = countDown();
             event.preventDefault();
           });
 
-          $(document).on('click', '.btn-item', function(event) {  //次へ
+          $(document).on('click', '[data-js="page-next"]', function(event) {  //次へ
             products();
+            pageNum = countUp();
             event.preventDefault();
           });
+
+          function keywordButton() {
+            var keyword = $('.search__text__input').val();
+            return keyword
+          }
+
+          function countUp() {
+            pageNum = pageNum + 1;
+            return pageNum;
+          }
+
+          function countDown() {
+            pageNum = pageNum - 1;
+            return pageNum;
+          }
 
           function products() {
-            var keyword = $('.search__text__input').val();
+            console.log(pageNum);
             $.ajax({
             url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
             type: 'GET',
@@ -133,12 +152,13 @@
               applicationId: appId,
               booksGenreId: '001',
               keyword: keyword,
+              page: pageNum,
               hits: 20
           }
         }).done(function(data) {
           if (data.count === 0) {
             $('.message').prepend('<p>検索結果が見つかりませんでした。<br>別のキーワードで検索してください。</p>');
-          } else if  (data.count > 0) {
+          } else if  (data.page > 0) {
             $('.lists').empty();
             $.each(data.Items, function(index, item) {
               console.log(item);
@@ -161,58 +181,6 @@
             })
           }
         });
-
-
-      /*$(function() {
-        $('.search__btn').on('click', function () {
-          var keyword = $('.search__text__input').val();
-          console.log(keyword);
-
-          $.ajax({
-            url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
-            type: 'GET',
-            datatype: 'json',
-            data: {
-            keyword: keyword,
-            hits: '20',
-            applicationId: appId,
-            booksGenreId: '001'
-          },
-        }).done(function(data) {
-          // この中にデータ取得後の動きを記述していきます。
-            products();
-                
-          $(document).on('click','.btn-item', function() {
-            return false;
-            console.log(keyword);
-            products();
-          });
-
-          function products() {
-            
-            if (data.hits === 0) {
-              $('.message').prepend('<p>検索結果が見つかりませんでした。<br>別のキーワードで検索してください。</p>');
-            } else if (data.hits > 0) {
-              $.each(data.Items, function(index, item) {
-              console.log(item);
-              var itemList = $('<li class="lists__item">' + '<div class="lists__item__inner">' + '<a href="'+ item.Item.itemUrl +'" class="lists__item__link" target="_blank">' + '<img src="' + item.Item.largeImageUrl + '" class="lists__item__img" alt="' + item.Item.title + '">'
-              + '<p class="lists__item__detail">作品名：'+ item.Item.title +'</p>'
-              + '<p class="lists__item__detail">作者　：' + item.Item.author +'</p>'
-              + '<p class="lists__item__detail">出版社：' + item.Item.publisherName +'</p>'
-              + '</a>' + '</div>' + '</li>');
-              $('.lists').prepend(itemList);
-            });
-              var pageList = $('<div class="pager" data-js="pager">' + '<div class="counter">' + '<span class="counter-current"></span>/<span class="counter-all"></span>' + '</div>'
-              + '<div class="btn-wrapper">' + '<a class="btn-item" data-js="page-prev" href="">前へ</a>'
-              + '<a class="btn-item" data-js="page-next" href="">次へ</a>'
-              + '</div>' + '</div>');
-              $('.lists').after(pageList);
-            }
-            }
-          console.log(data);
-          })
-        });
-      });*/
     </script>
   </body>
 </html>
