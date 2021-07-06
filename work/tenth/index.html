@@ -95,15 +95,17 @@
 
 
 //次へボタンを押したら
+  //ページナンバー+1
   //ajax通信の開始
   //listsの取得
-  //ページナンバー＋1
+  //最後のページにdisableクラスで非活性
 
 
 //前へボタンを押したら
+  //ページナンバー-1
   //ajax通信の開始
   //.listsの取得
-  //ページナンバー－1
+  //最初のページだけdisabledで非活性
 
         $(function() {
 
@@ -116,14 +118,14 @@
           });
 
           $(document).on('click', '[data-js="page-prev"]', function(event) {  //前へ
-            products();
             pageNum = countDown();
+            products();
             event.preventDefault();
           });
 
           $(document).on('click', '[data-js="page-next"]', function(event) {  //次へ
-            products();
             pageNum = countUp();
+            products();
             event.preventDefault();
           });
 
@@ -158,7 +160,7 @@
         }).done(function(data) {
           if (data.count === 0) {
             $('.message').prepend('<p>検索結果が見つかりませんでした。<br>別のキーワードで検索してください。</p>');
-          } else if  (data.page > 0) {
+          } else if (data.page > 0) {
             $('.lists').empty();
             $.each(data.Items, function(index, item) {
               console.log(item);
@@ -171,14 +173,17 @@
               $('.lists').prepend(itemList);
             });
               $('.pager').remove();
-              var pageList = $('<div class="pager" data-js="pager">' + '<div class="counter">' + '<span class="counter-current">'+data.page+'</span>/<span class="counter-all">'+ data.pageCount +'</span>' + '</div>'
-              + '<div class="btn-wrapper">' + '<a class="btn-item" data-js="page-prev" href="">前へ</a>'
-              + '<a class="btn-item" data-js="page-next" href="">次へ</a>'
+              var pageList = $('<div class="pager" data-js="pager">' + '<div class="counter">' + '<span class="counter-current">'+ data.page +'</span>/<span class="counter-all">'+ data.pageCount +'</span>' + '</div>'
+              + '<div class="btn-wrapper">' + '<a class="btn-item disabled" data-js="page-prev" href="">前へ</a>'
+              + '<a class="btn-item disabled" data-js="page-next" href="">次へ</a>'
               + '</div>' + '</div>');
               $('.lists').after(pageList);
             }
           console.log(data);
             })
+            //.fall(function(data) {
+              
+            //})
           }
         });
     </script>
