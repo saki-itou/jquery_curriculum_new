@@ -160,7 +160,7 @@
         }).done(function(data) {
           if (data.count === 0) {
             $('.message').prepend('<p>検索結果が見つかりませんでした。<br>別のキーワードで検索してください。</p>');
-          } else if (data.page > 0) {
+          } else if (data.count > 0) {
             $('.lists').empty();
             $.each(data.Items, function(index, item) {
               console.log(item);
@@ -174,17 +174,24 @@
             });
               $('.pager').remove();
               var pageList = $('<div class="pager" data-js="pager">' + '<div class="counter">' + '<span class="counter-current">'+ data.page +'</span>/<span class="counter-all">'+ data.pageCount +'</span>' + '</div>'
-              + '<div class="btn-wrapper">' + '<a class="btn-item disabled" data-js="page-prev" href="">前へ</a>'
-              + '<a class="btn-item disabled" data-js="page-next" href="">次へ</a>'
+              + '<div class="btn-wrapper">' + '<a class="btn-item" data-js="page-prev" href="">前へ</a>'
+              + '<a class="btn-item" data-js="page-next" href="">次へ</a>'
               + '</div>' + '</div>');
               $('.lists').after(pageList);
+
+              if (data.count < 20) {
+                $('[data-js="page-prev"]').addClass('disabled');
+              }
+              if (data.count > 20) {
+                $('[data-js="page-next"]').addClass('disabled');
+              }
             }
           console.log(data);
-            })
+            });
             //.fall(function(data) {
               
             //})
-          }
+            }
         });
     </script>
   </body>
