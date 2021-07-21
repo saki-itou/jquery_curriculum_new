@@ -179,13 +179,17 @@
               + '</div>' + '</div>');
               $('.lists').after(pageList);
 
-              if (data.count < 20) {
+              if (data.pageCount <= 1) {
+                $('.btn-item').addClass('disabled');
+              };
+              //総ページ数が1より多く、最初のページだけ「前へ」にdisableクラスを付ける
+              if (data.pageCount > 1) {
                 $('[data-js="page-prev"]').addClass('disabled');
+              //総ページ数が1より多く、最後のページだけ「次へ」にdisableクラスを付ける
+              } else if (data.pageCount > 1) {
+                $('[data-js="page-next"]').addClass('disabled')
               }
-              if (data.count > 20) {
-                $('[data-js="page-next"]').addClass('disabled');
-              }
-            }
+          }
           console.log(data);
             });
             //.fall(function(data) {
