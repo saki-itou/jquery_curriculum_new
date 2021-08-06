@@ -110,41 +110,46 @@
         $(function() {
 
           var pageNum = 0;
+          var prevword = '';
 
-          $('.search__btn').on('click', function () {
+          $('.search__btn').on('click', function () { //検索ボタンを押した時の処理の実行
             keyword = keywordButton();
-            pageNum = countUp();
+            if(prevword !== keyword) { // prevwordがkeywordと異なるとき
+            pageNum = 1; // pageNumを空にする
+            $('.lists').empty(); // .listsの中身を空にする
+            prevword = keyword
+            }
             products();
           });
 
           $(document).on('click', '[data-js="page-prev"]', function(event) {  //前へ
-            pageNum = countDown();
-            products();
-            event.preventDefault();
+            pageNum = countDown(); //ページ数を－1する
+            products(); //検索結果の取得の実行
+            event.preventDefault(); //aタグ遷移の無効化
           });
 
           $(document).on('click', '[data-js="page-next"]', function(event) {  //次へ
-            pageNum = countUp();
-            products();
-            event.preventDefault();
+            pageNum = countUp(); //ページ数を+1する
+            products(); //検索結果の取得の実行
+            event.preventDefault(); //aタグ遷移の無効化
           });
 
-          function keywordButton() {
+          function keywordButton() { //検索ワードを入力
             var keyword = $('.search__text__input').val();
             return keyword
           }
 
-          function countUp() {
+          function countUp() { //ページ数をカウントアップする
             pageNum = pageNum + 1;
             return pageNum;
           }
 
-          function countDown() {
+          function countDown() { //ページ数をカウントダウンする
             pageNum = pageNum - 1;
             return pageNum;
           }
 
-          function products() {
+          function products() { //検索結果の取得の動きの記述
             console.log(pageNum);
             $.ajax({
             url: 'https://app.rakuten.co.jp/services/api/BooksTotal/Search/20130522',
@@ -183,19 +188,18 @@
                 $('.btn-item').addClass('disabled');
               };
               //総ページ数が1より多く、最初のページだけ「前へ」にdisableクラスを付ける
-              if (data.pageCount > 1) {
+              if (data.page === 1) { //現在のページ数が1の時
                 $('[data-js="page-prev"]').addClass('disabled');
               //総ページ数が1より多く、最後のページだけ「次へ」にdisableクラスを付ける
-              } else if (data.pageCount > 1) {
+              } else if (pageNum === data.pageCount) { // これで最後のページの指定
                 $('[data-js="page-next"]').addClass('disabled')
               }
-          }
-          console.log(data);
-            });
-            //.fall(function(data) {
-              
-            //})
-            }
+          };
+          //console.log(data);
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+              $('.meaasage').prepend('<p>リクエスト過多です。しばらく時間を置いてからお試しください。</p>')
+            })
+          };       
         });
     </script>
   </body>
