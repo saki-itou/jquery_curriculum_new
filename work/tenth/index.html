@@ -123,13 +123,17 @@
           });
 
           $(document).on('click', '[data-js="page-prev"]', function(event) {  //前へ
+            if ('disabled', false) {
             pageNum = countDown(); //ページ数を－1する
+            };
             products(); //検索結果の取得の実行
             event.preventDefault(); //aタグ遷移の無効化
           });
 
           $(document).on('click', '[data-js="page-next"]', function(event) {  //次へ
+            if ('disabled', false) {
             pageNum = countUp(); //ページ数を+1する
+            };
             products(); //検索結果の取得の実行
             event.preventDefault(); //aタグ遷移の無効化
           });
