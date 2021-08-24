@@ -114,27 +114,27 @@
 
           $('.search__btn').on('click', function () { //検索ボタンを押した時の処理の実行
             keyword = keywordButton();
-            if(prevword !== keyword) { // prevwordがkeywordと異なるとき
+            if (prevword !== keyword) { // prevwordがkeywordと異なるとき
             pageNum = 1; // pageNumを空にする
-            $('.lists').empty(); // .listsの中身を空にする
+            $('.lists, .message').empty(); // .listsの中身を空にする
             prevword = keyword
             }
             products();
           });
 
-          $(document).on('click', '[data-js="page-prev"]', function(event) {  //前へ
-            if ('disabled', false) {
-            pageNum = countDown(); //ページ数を－1する
+          $(document).on('click', '[data-js="page-prev"]', function(event) {  //前
+            if ($(this).hasClass('disabled') === false) {
+              pageNum = countDown(); //ページ数を－1する
+              products(); //検索結果の取得の実行
             };
-            products(); //検索結果の取得の実行
             event.preventDefault(); //aタグ遷移の無効化
           });
 
           $(document).on('click', '[data-js="page-next"]', function(event) {  //次へ
-            if ('disabled', false) {
-            pageNum = countUp(); //ページ数を+1する
-            };
-            products(); //検索結果の取得の実行
+            if ($(this).hasClass('disabled') === false) {
+              pageNum = countUp(); //ページ数を+1する
+              products(); //検索結果の取得の実行
+            }
             event.preventDefault(); //aタグ遷移の無効化
           });
 
@@ -167,8 +167,9 @@
               hits: 20
           }
         }).done(function(data) {
+          $('.message').empty();
           if (data.count === 0) {
-            $('.message').prepend('<p>検索結果が見つかりませんでした。<br>別のキーワードで検索してください。</p>');
+            $('.message').prepend('<p class="error-message">検索結果が見つかりませんでした。<br>別のキーワードで検索してください。</p>')
           } else if (data.count > 0) {
             $('.lists').empty();
             $.each(data.Items, function(index, item) {
@@ -199,9 +200,14 @@
                 $('[data-js="page-next"]').addClass('disabled')
               }
           };
-          //console.log(data);
-            }).fail(function(jqXHR, textStatus, errorThrown) {
-              $('.meaasage').prepend('<p>リクエスト過多です。しばらく時間を置いてからお試しください。</p>')
+          console.log(data);
+            }).fail(function(data) {
+              $('.message').empty();
+              if (keyword === '') { //
+                $('.message').prepend('<p class="error-message">検索文字が入力されていません。</p>')
+              } else if (jqXHR, textStatus, errorThrown) {
+                $('.message').prepend('<p class="error-message">リクエスト過多です。しばらく時間を置いてからお試しください。</p>')
+              };
             })
           };       
         });
