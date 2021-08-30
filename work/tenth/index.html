@@ -109,22 +109,23 @@
 
         $(function() {
 
-          var pageNum = 0;
-          var prevword = '';
+          var pageNum = 0; //pageNumに0を代入
+          var keyword = ''; //keywordに空の文字を定義
+          var prevword = ''; // prevwordに空の文字列を定義
 
           $('.search__btn').on('click', function () { //検索ボタンを押した時の処理の実行
-            keyword = keywordButton();
+            keyword = keywordButton(); // 入力した値を取得
             if (prevword !== keyword) { // prevwordがkeywordと異なるとき
             pageNum = 1; // pageNumを空にする
             $('.lists, .message').empty(); // .listsの中身を空にする
-            prevword = keyword
             }
-            products();
+            products(); //検索結果の取得
+            $('.pager').remove(); //商品結果取得後空の検索文字入力後のページャの削除
           });
 
-          $(document).on('click', '[data-js="page-prev"]', function(event) {  //前
-            if ($(this).hasClass('disabled') === false) {
-              pageNum = countDown(); //ページ数を－1する
+          $(document).on('click', '[data-js="page-prev"]', function(event) {  //前  (のちに追加したものはセレクタに指定できない)
+            if ($(this).hasClass('disabled') === false) { //前へにdisabledがなかった時（falseで返す）
+              countDown(); //ページ数-1の実行
               products(); //検索結果の取得の実行
             };
             event.preventDefault(); //aタグ遷移の無効化
@@ -132,14 +133,14 @@
 
           $(document).on('click', '[data-js="page-next"]', function(event) {  //次へ
             if ($(this).hasClass('disabled') === false) {
-              pageNum = countUp(); //ページ数を+1する
+              countUp(); //ページ数+1の実行
               products(); //検索結果の取得の実行
             }
             event.preventDefault(); //aタグ遷移の無効化
           });
 
           function keywordButton() { //検索ワードを入力
-            var keyword = $('.search__text__input').val();
+            var keyword = $('.search__text__input').val(); //入力欄に入力した文字をkeywordに代入
             return keyword
           }
 
@@ -167,15 +168,14 @@
               hits: 20
           }
         }).done(function(data) {
-          $('.message').empty();
-          if (data.count === 0) {
+          $('.message').empty(); //検索ボタン押下毎にメッセージを削除
+          if (data.count === 0) { //検索結果が0件だった時
             $('.message').prepend('<p class="error-message">検索結果が見つかりませんでした。<br>別のキーワードで検索してください。</p>')
-          } else if (data.count > 0) {
-            $('.lists').empty();
-            $.each(data.Items, function(index, item) {
-              console.log(item);
-              var itemList = ''
-              itemList += '<li class="lists__item">' + '<div class="lists__item__inner">' + '<a href="'+ item.Item.itemUrl +'" class="lists__item__link" target="_blank">' + '<img src="' + item.Item.largeImageUrl + '" class="lists__item__img" alt="' + item.Item.title + '">'
+          } else if (data.count > 0) { //検索結果が0よりも大きかった時
+            $('.lists').empty(); //検索ボタンやページャ押下毎にリストを削除
+            $.each(data.Items, function(index, item) { //繰り返しアイテムを取得する
+              console.log(item);//itemをconsoleに表示
+              var itemList = '<li class="lists__item">' + '<div class="lists__item__inner">' + '<a href="'+ item.Item.itemUrl +'" class="lists__item__link" target="_blank">' + '<img src="' + item.Item.largeImageUrl + '" class="lists__item__img" alt="' + item.Item.title + '">'
                 + '<p class="lists__item__detail">作品名：'+ item.Item.title +'</p>'
               + '<p class="lists__item__detail">作者　：' + item.Item.author +'</p>'
               + '<p class="lists__item__detail">出版社：' + item.Item.publisherName +'</p>'
@@ -188,8 +188,8 @@
               + '<a class="btn-item" data-js="page-next" href="">次へ</a>'
               + '</div>' + '</div>');
               $('.lists').after(pageList);
-
-              if (data.pageCount <= 1) {
+              
+              if (data.pageCount <= 1) { //アイテム数が1ページ分しかない時
                 $('.btn-item').addClass('disabled');
               };
               //総ページ数が1より多く、最初のページだけ「前へ」にdisableクラスを付ける
@@ -201,14 +201,20 @@
               }
           };
           console.log(data);
-            }).fail(function(data) {
+            }).fail(function(error) {
               $('.message').empty();
-              if (keyword === '') { //
-                $('.message').prepend('<p class="error-message">検索文字が入力されていません。</p>')
-              } else if (jqXHR, textStatus, errorThrown) {
-                $('.message').prepend('<p class="error-message">リクエスト過多です。しばらく時間を置いてからお試しください。</p>')
+              switch (error.status) {
+                case 400:
+                  $('.message').prepend('<p class="error-message">検索文字が入力されていません。</p>')
+                  break;
+                case 429:
+                  $('.message').prepend('<p class="error-message">リクエスト過多です。しばらく時間を置いてからお試しください。</p>')
+                  break;
+                case 500:
+                  $('.message').prepend('<p class="error-message">エラーが発生しました。しばらく時間を置いてからお試しください。</p>')
+                  break;
               };
-            })
+            });
           };       
         });
     </script>
