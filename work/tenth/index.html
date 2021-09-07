@@ -122,6 +122,7 @@
 
           $(document).on('click', '[data-js="page-prev"]', function(event) {  //前  (のちに追加したものはセレクタに指定できない)
             if ($(this).hasClass('disabled') === false) { //前へにdisabledがなかった時（falseで返す）
+              $('html,body').scrollTop(0);
               countDown(); //ページ数-1の実行
               products(); //検索結果の取得の実行
             };
@@ -130,9 +131,11 @@
 
           $(document).on('click', '[data-js="page-next"]', function(event) {  //次へ
             if ($(this).hasClass('disabled') === false) {
+              $('html,body').scrollTop(0);
               countUp(); //ページ数+1の実行
               products(); //検索結果の取得の実行
             }
+            
             event.preventDefault(); //aタグ遷移の無効化
           });
 
@@ -174,17 +177,17 @@
         }).done(function(data) {
           $('.message').empty(); //検索ボタン押下毎にメッセージを削除
           if (data.count === 0) { //検索結果が0件だった時
-            $('.message').prepend('<p class="error-message">検索結果が見つかりませんでした。<br>別のキーワードで検索してください。</p>')
+            $('.message').append('<p class="error-message">検索結果が見つかりませんでした。<br>別のキーワードで検索してください。</p>')
           } else if (data.count > 0) { //検索結果が0よりも大きかった時
             $('.lists').empty(); //検索ボタンやページャ押下毎にリストを削除
-            $.each(data.Items, function(index, value) { //繰り返しアイテムを取得する
-              console.log(value);//itemをconsoleに表示
-              var itemList = '<li class="lists__item">' + '<div class="lists__item__inner">' + '<a href="'+ value.Item.itemUrl +'" class="lists__item__link" target="_blank">' + '<img src="' + value.Item.largeImageUrl + '" class="lists__item__img" alt="' + value.Item.title + '">'
-                + '<p class="lists__item__detail">作品名：'+ value.Item.title +'</p>'
-              + '<p class="lists__item__detail">作者　：' + value.Item.author +'</p>'
-              + '<p class="lists__item__detail">出版社：' + value.Item.publisherName +'</p>'
+            $.each(data.Items, function(index, item) { //繰り返しアイテムを取得する
+              console.log(item);//itemをconsoleに表示
+              var itemList = '<li class="lists__item">' + '<div class="lists__item__inner">' + '<a href="'+ item.Item.itemUrl +'" class="lists__item__link" target="_blank">' + '<img src="' + item.Item.largeImageUrl + '" class="lists__item__img" alt="' + item.Item.title + '">'
+                + '<p class="lists__item__detail">作品名：'+ item.Item.title +'</p>'
+              + '<p class="lists__item__detail">作者　：' + item.Item.author +'</p>'
+              + '<p class="lists__item__detail">出版社：' + item.Item.publisherName +'</p>'
               + '</a>' + '</div>' + '</li>'
-              $('.lists').prepend(itemList);
+              $('.lists').append(itemList);
             });
               $('.pager').remove();
               var pageList = $('<div class="pager" data-js="pager">' + '<div class="counter">' + '<span class="counter-current">'+ data.page +'</span>/<span class="counter-all">'+ data.pageCount +'</span>' + '</div>'
