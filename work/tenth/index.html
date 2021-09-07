@@ -74,8 +74,8 @@
       // ページャの条件
       // ├ 〇「現在のページ数」と「全てのページ数」が表示されている
       // ├ 〇「前へ」と「次へ」のボタンがある
-      // ├ 1ページ目では「前へ」に、最後のページでは「次へ」にdisabledクラスをつけて非活性（使用不能）にする
-      // └ 1ページしかない場合はどちらもdisabledクラスをつけて非活性にする
+      // ├ 〇1ページ目では「前へ」に、最後のページでは「次へ」にdisabledクラスをつけて非活性（使用不能）にする
+      // └ 〇1ページしかない場合はどちらもdisabledクラスをつけて非活性にする
       //
       // ページャのテンプレート
       // <div class="pager" data-js="pager">
@@ -115,10 +115,7 @@
 
           $('.search__btn').on('click', function () { //検索ボタンを押した時の処理の実行
             keyword = keywordButton(); // 入力した値を取得
-            if (prevword !== keyword) { // prevwordがkeywordと異なるとき
-            pageNum = 1; // pageNumを空にする
-            $('.lists, .message').empty(); // .listsの中身を空にする
-            }
+            switching();
             products(); //検索結果の取得
             $('.pager').remove(); //商品結果取得後空の検索文字入力後のページャの削除
           });
@@ -144,15 +141,22 @@
             return keyword
           }
 
+          function switching() {
+            if (prevword !== keyword) { // prevwordがkeywordと異なるとき
+              pageNum = 1; // pageNumを空にする
+              $('.lists').empty(); // .listsの中身を空にする
+            };
+          };
+
           function countUp() { //ページ数をカウントアップする
             pageNum = pageNum + 1;
             return pageNum;
-          }
+          };
 
           function countDown() { //ページ数をカウントダウンする
             pageNum = pageNum - 1;
             return pageNum;
-          }
+          };
 
           function products() { //検索結果の取得の動きの記述
             console.log(pageNum);
@@ -173,12 +177,12 @@
             $('.message').prepend('<p class="error-message">検索結果が見つかりませんでした。<br>別のキーワードで検索してください。</p>')
           } else if (data.count > 0) { //検索結果が0よりも大きかった時
             $('.lists').empty(); //検索ボタンやページャ押下毎にリストを削除
-            $.each(data.Items, function(index, item) { //繰り返しアイテムを取得する
-              console.log(item);//itemをconsoleに表示
-              var itemList = '<li class="lists__item">' + '<div class="lists__item__inner">' + '<a href="'+ item.Item.itemUrl +'" class="lists__item__link" target="_blank">' + '<img src="' + item.Item.largeImageUrl + '" class="lists__item__img" alt="' + item.Item.title + '">'
-                + '<p class="lists__item__detail">作品名：'+ item.Item.title +'</p>'
-              + '<p class="lists__item__detail">作者　：' + item.Item.author +'</p>'
-              + '<p class="lists__item__detail">出版社：' + item.Item.publisherName +'</p>'
+            $.each(data.Items, function(index, value) { //繰り返しアイテムを取得する
+              console.log(value);//itemをconsoleに表示
+              var itemList = '<li class="lists__item">' + '<div class="lists__item__inner">' + '<a href="'+ value.Item.itemUrl +'" class="lists__item__link" target="_blank">' + '<img src="' + value.Item.largeImageUrl + '" class="lists__item__img" alt="' + value.Item.title + '">'
+                + '<p class="lists__item__detail">作品名：'+ value.Item.title +'</p>'
+              + '<p class="lists__item__detail">作者　：' + value.Item.author +'</p>'
+              + '<p class="lists__item__detail">出版社：' + value.Item.publisherName +'</p>'
               + '</a>' + '</div>' + '</li>'
               $('.lists').prepend(itemList);
             });
@@ -202,7 +206,7 @@
           };
           console.log(data);
             }).fail(function(error) {
-              $('.message').empty();
+              $('.lists, .message').empty();
               switch (error.status) {
                 case 400:
                   $('.message').prepend('<p class="error-message">検索文字が入力されていません。</p>')
@@ -210,12 +214,12 @@
                 case 429:
                   $('.message').prepend('<p class="error-message">リクエスト過多です。しばらく時間を置いてからお試しください。</p>')
                   break;
-                case 500:
-                  $('.message').prepend('<p class="error-message">エラーが発生しました。しばらく時間を置いてからお試しください。</p>')
+                case 0:
+                  $('.message').prepend('<p class="error-message">通信に失敗しました。インターネットの接続をご確認ください。</p>')
                   break;
               };
             });
-          };       
+          };
         });
     </script>
   </body>
