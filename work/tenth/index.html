@@ -163,7 +163,7 @@
             + '</div>' + '</div>'
             $('.lists').after(pageList);
 
-            if (data.count <= 20) {
+            if (data.pageCount <= 1) {
               $('.btn-item').addClass('disabled');
             } else if (data.page === 1) {
               $('[data-js="page-prev"]').addClass('disabled');
